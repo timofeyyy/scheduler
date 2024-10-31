@@ -101,16 +101,17 @@ class Ui(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.InitTextContent(MainWindow)
-        self.InitStyleSheets(MainWindow)
+        # self.InitStyleSheets(MainWindow)
 
     def InitTextContent(self, MainWindow):
+        elements = ["микросхемы", "резистры", "транзисторы", "конденсаторы", "диоды"]  # can get it from DB
         MainWindow.setWindowTitle("Планировщик задач")
         self.label_3.setText("Номер страницы")
         self.label_2.setText("Тип элементов")
-        self.comboBox.addItem("диоды")
-        self.comboBox.addItem("транзисторы")
-        self.comboBox.addItem("конденсаторы")
-        self.comboBox.addItem("резистры")
+
+        for _ in elements:
+            self.comboBox.addItem(_)
+
         self.autoLaunchBtn.setText("Запустить автоматически")
         self.label_1.setText("Chrome driver")
         self.driverBtn.setText("Запустить")
