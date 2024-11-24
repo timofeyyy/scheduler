@@ -53,17 +53,6 @@ class Ui(object):
         spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.verticalLayout_2.addItem(spacerItem5)
 
-        # нижний виджет с автозапуском
-
-        # self.widget_3 = QtWidgets.QWidget(parent=self.centralwidget)
-        # self.widget_3.setGeometry(QtCore.QRect(0, 480, 600, 121))
-        # self.widget_3.setMinimumSize(QtCore.QSize(600, 0))
-        #
-        # self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.widget_3)
-        # self.autoLaunchBtn = QtWidgets.QPushButton(parent=self.widget_3)
-        # self.autoLaunchBtn.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        # self.verticalLayout_6.addWidget(self.autoLaunchBtn, 0, QtCore.Qt.AlignmentFlag.AlignHCenter)
-
         # виджет с кнопками
 
         self.widget_4 = QtWidgets.QWidget(parent=self.centralwidget)
@@ -87,7 +76,6 @@ class Ui(object):
 
 
         self.verticalLayout_3.addWidget(self.widget_5)
-
 
 
         self.widget_6 = QtWidgets.QWidget(parent=self.widget_4)
@@ -146,7 +134,8 @@ class Ui(object):
         self.parserBtn.setStyleSheet("font-size: 15px;")
 
     def InitTextContent(self, MainWindow):
-        elements = ["микросхемы", "резистры", "транзисторы", "конденсаторы", "диоды"]  # can get it from DB
+        elements = ["ic-chip", "ic-memory", "rezistory"]
+        # can get it from DB
         MainWindow.setWindowTitle("Планировщик задач")
 
 
@@ -157,9 +146,8 @@ class Ui(object):
         self.label_2.setText("Тип элементов")
         self.label_3.setText("Номер страницы")
         self.label_4.setText("Parser")
-        self.label_5.setText("Запуск программы")
+        self.label_5.setText("Запускать автоматически")
 
-        # self.autoLaunchBtn.setText("Запустить автоматически")
         self.driverBtn.setText("Запустить")
         self.parserBtn.setText("Запустить")
         self.launchBtn.setText("Запустить")
@@ -177,7 +165,6 @@ class Ui(object):
         self.label_2.setStyleSheet("color: white; font-size:26px;")
         self.comboBox.setStyleSheet("background-color: white; font-size: 15px;")
         self.widget_3.setStyleSheet("background-color: #483D8B;")
-        # self.autoLaunchBtn.setStyleSheet("background-color: #1f1f1f; color: white; font-size: 15px; padding: 20px; border-radius: 10px;")
         self.label_1.setStyleSheet("color: white; font-size:26px;")
         self.widget_4.setStyleSheet("background-color: #483D8B;")
         self.driverBtn.setStyleSheet("background-color: #1f1f1f; color: white; font-size: 15px;")

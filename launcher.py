@@ -1,6 +1,9 @@
 import sys
+import os
+import signal
 import subprocess
 import threading
+import psutil
 import random
 from time import sleep
 
@@ -20,177 +23,174 @@ class MainWindow(QMainWindow, Ui):
         self.launchBtn.clicked.connect(self.run_launcher)
         self.numberLineEdit.textChanged.connect(self.get_number)
         self.comboBox.currentIndexChanged.connect(self.get_type)
-        self.button_status = [ "Отключить", "Запустить"]
-
-
+        self.get_type(0)
 
     def run_driver(self):
-        # for example invalid status 1 depend on command status
-        if not hasattr(self, 'driver_status'):
-            self.driver_status = 1
+        if not hasattr(self, 'is_driver_working'):
+            self.is_driver_working = False
 
-        if self.driver_status == 1 :
-            self.driver_status_label.setText("Работает")
-            self.driver_status = 0
+        if not self.is_driver_working:
             thread = threading.Thread(target=self.run_driver_command)
             thread.start()
         else:
+            print(self.driver_process.pid)
             self.driver_process.terminate()
-            self.driver_status_label.setText("Отключен")
-            self.driver_status = 1
 
-        self.driverBtn.setText(self.button_status[self.driver_status])
+
+        self.is_driver_working = not self.is_driver_working
+        self.driverBtn.setText('Отключить' if self.is_driver_working else 'Запустить')
+        self.driver_status_label.setText('Работает' if self.is_driver_working else 'Отключен')
 
     def print_stdout(self, lines):
         for line in lines:
             print(line.strip())
-
     def run_driver_command(self):
+
         self.driver_process = subprocess.Popen(
-            "ping google.com -n 10",
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            encoding='cp866'
+            # 'java "-Dwebdriver.chrome.driver=d:\\work\\selenium2\\chromedriver.exe" -jar "D:\\work\\selenium2\\selenium-server-standalone-3.5.3.jar"',
+           "ping google.com -n 20",
+            creationflags=subprocess.CREATE_NEW_CONSOLE
         )
-        self.print_stdout(self.driver_process.stdout)
 
-
-
-
-        label_message = "Отключен"
-
+        label_message = 'Отключен'
         self.driver_process.wait()
         if self.driver_process.returncode == 1:
-            label_message = "Комманда завершилась с ошибкой или была прервана"
-
-        self.driver_status = 1
+            label_message = 'Комманда была прервана'
+        self.is_driver_working = False
         print(self.driver_process.returncode)
 
         self.driver_status_label.setText(label_message)
-        self.driverBtn.setText(self.button_status[self.driver_status])
-
-
-
-
-
-
+        self.driverBtn.setText('Запустить')
     def run_parser(self):
-        if not hasattr(self, 'page') or not hasattr(self, 'selectedItem'):
-            msgBox = QMessageBox()
-            msgBox.setText("Выберите страницу и тип элемента")
-            ret = msgBox.exec()
+        if not self.params_defined():
             return
 
-        # for example invalid status 1 depend on command status
-        if not hasattr(self, 'parser_status'):
-            self.parser_status = 1
+        if not hasattr(self, 'is_parser_working'):
+            self.is_parser_working = False
 
-        if self.parser_status == 1:
+        if not self.is_parser_working:
             self.edit_config()
-            self.parser_status_label.setText("Работает")
-            self.parser_status = 0
             thread = threading.Thread(target=self.run_parser_command)
             thread.start()
         else:
-            self.parser_process.terminate()
-            self.parser_status_label.setText("Отключен")
-            self.parser_status = 1
+            self.stop_parser()
 
-        self.parserBtn.setText(self.button_status[self.parser_status])
+        self.is_parser_working = not self.is_parser_working
 
+        self.parserBtn.setText('Отключить' if self.is_parser_working else 'Запустить')
+        self.parser_status_label.setText('Работает' if self.is_parser_working else 'Комманда была прервана')
+        self.driverBtn.setEnabled(not self.is_parser_working)
+
+        if not hasattr(self, 'is_launcher_working') or (hasattr(self, 'is_launcher_working') and not self.is_launcher_working):
+            self.launchBtn.setEnabled(not self.is_parser_working)
+        else:
+            self.parserBtn.setEnabled(not self.is_parser_working)
+    def params_defined(self):
+        if not hasattr(self, 'page') or not hasattr(self, 'selectedItem'):
+            msgBox = QMessageBox()
+            msgBox.setText("Выберите страницу и тип элемента")
+            msgBox.exec()
+            return False
+        return True
     def edit_config(self):
         print(self.page)
-        with open("config.properties", "r") as config:
+        with open("D:\\work\\scheduler\\config.properties", "r") as config:
             content = config.read()
             params = content.split("\n")
-            # print(params)
             for i in range(len(params)):
-                key_value = params[i].split("=")
+                key_value = params[i].split(" = ")
                 key = key_value[0].replace(" ", "")
-                if key == "url":
-                    key_value[1] = f'"https://metanit.com/python/tutorial/{self.page}.php"'
-                params[i] = '= '.join(key_value)
-
+                if key == "baseUrlPageNum":
+                    key_value[1] = f'"https://www.chipdip.by/catalog-show/{self.selectedItem}?page={self.page}"'
+                params[i] = ' = '.join(key_value)
             content = '\n'.join(params)
 
-        with open("config.properties", "w") as config:
+        with open("D:\\work\\scheduler\\config.properties", "w") as config:
             config.write(content)
 
-
+    def stop_parser(self):
+        subprocess.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.parser_process.pid))
 
     def run_parser_command(self):
+
         self.parser_process = subprocess.Popen(
-            "ping google.com -n 10",
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            encoding='cp866'
+            # "mvn test -Dsuite=testng",
+            "ping google.com -n 20",
+            # cwd='D:\\work\\microparser',
+            shell=True
         )
-        self.print_stdout(self.parser_process.stdout)
+        self.parser_process.wait()
+
         label_message = "Отключен"
 
-        self.parser_process.wait()
         if self.parser_process.returncode == 1:
-            label_message = "Комманда завершилась с ошибкой или была прервана"
+            label_message = "Комманда была прервана"
 
-        self.parser_status = 1
-        print(self.parser_process.returncode)
+        self.is_parser_working = False
+        print(f"парсер статус {self.parser_process.returncode}")
 
         self.parser_status_label.setText(label_message)
-        self.parserBtn.setText(self.button_status[self.parser_status])
+        self.parserBtn.setText('Запустить')
+        self.launchBtn.setEnabled(True)
+        self.parserBtn.setEnabled(True)
+        self.driverBtn.setEnabled(True)
 
     def run_launcher(self):
-        if not hasattr(self, 'launcher_status'):
-            self.launcher_status = 1
+        if not self.params_defined():
+            return
 
-        label_message = "Отключен"
+        if not hasattr(self, 'is_launcher_working'):
+            self.is_launcher_working = False
 
-        if not hasattr(self, 'is_working') or not self.is_working:
-            self.launcher_status = 0
-            label_message = "Работает"
-            thread = threading.Thread(target=self.run_launcher_command)
+        if not self.is_launcher_working:
+            thread = threading.Thread(target=self.run_listener)
             thread.start()
         else:
-            self.launcher_status = 1
-            self.launcher_process.terminate()
-            self.is_working = False
+            self.stop_parser()
+            self.parserBtn.setEnabled(True)
+            self.driverBtn.setEnabled(True)
+            self.is_listener_working = False
 
-        self.launch_status_label.setText(label_message)
-        self.launchBtn.setText(self.button_status[self.launcher_status])
+        self.is_launcher_working = not self.is_launcher_working
+        self.launch_status_label.setText('Работает' if self.is_launcher_working else 'Комманда была прервана')
 
 
-    def run_launcher_command(self):
-        self.launcher_status = 0
+    def run_listener(self):
+        self.delay_time_past = True
         self.hours_delay = 0
-        self.is_working = True
+        self.is_listener_working = True
+        self.launchBtn.setText('Отключить')
 
-        while self.is_working:
-            if not self.launcher_status == None:
+        while self.is_listener_working:
+            if self.delay_time_past:
                 if self.hours_delay != 0:
-                    sleep(self.hours_delay) # * 60 * 60
+                        sleep(self.hours_delay)
+                        if not self.is_listener_working:
+                            break
 
-                thread = threading.Thread(target=self.wait_launcher_end)
+                thread = threading.Thread(target=self.run_parser)
                 thread.start()
+                label_message = 'Работает'
+                self.delay_time_past = False
+
+            sleep(1)
+
+            if self.parser_process.returncode == 0:
                 self.hours_delay = random.randint(6, 10)
-                self.launcher_status = None
+                label_message = f"Выполнено, выжидает интервал перед следущим запуском {self.hours_delay} часов"
+                self.page = f'{int(self.page)+1}'
+                self.numberLineEdit.setText(self.page)
+                self.edit_config()
+                self.delay_time_past = True
 
-            sleep(2)
+            elif self.parser_process.returncode != None:
+                label_message = "Комманда была прервана"
+                self.is_listener_working = False
 
+            print(f"слушатель {self.parser_process.returncode}")
+            self.launch_status_label.setText(label_message)
 
-    def wait_launcher_end(self):
-        self.launcher_process = subprocess.Popen("ping google.com -n 10", creationflags=subprocess.CREATE_NEW_CONSOLE)
-        self.launcher_process.wait()
-        self.launcher_status = self.launcher_process.returncode
-
-        label_message = f"Выполнено, выжидае интервал перед следущим запуском {self.hours_delay} часов"
-        # if we break ping operation in the middle of processing we will get status 0 which is mean good status and that is why we will have Отключено instead of Комманда завершилась с ошибкой или была прервана
-        if self.launcher_status == 1:
-            label_message = "Комманда завершилась с ошибкой или была прервана"
-            self.is_working = False
-
-        print(self.launcher_status)
-        self.launch_status_label.setText(label_message)
-        self.launchBtn.setText(self.button_status[self.launcher_status])
-
+        self.launchBtn.setText('Запустить')
 
     def get_number(self):
         if not hasattr(self, 'page'):
