@@ -1,0 +1,10 @@
+baseUrl=   https://www.chipdip.by/
+nodeUrl=   http://localhost:4444/wd/hub
+screenShotsPath=   screenshots/
+baseUrlPageNum= "https://www.chipdip.by/catalog-show/ic-memory?page=88"
+
+driver=  com.mysql.cj.jdbc.Driver
+url=  jdbc:mysql://localhost:3306/car_services_db
+username=  root
+password=  Mysql123!
+poolSize=  7
