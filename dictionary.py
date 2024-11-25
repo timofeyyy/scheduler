@@ -3,6 +3,7 @@ class Dictionary:
     items = []
     types = []
     sites = []
+
     def __init__(self):
         #load info rom site
         self.items = [
@@ -53,3 +54,4 @@ class Dictionary:
             "www.chipdip.by",
             "www.belchip.by"
         ]
+
