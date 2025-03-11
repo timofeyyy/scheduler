@@ -1,14 +1,16 @@
 import json
-from db_oim_orm import (Microchips)
+from scheduler.db import db_oim_orm
+
 class Reader:
     data = []
-    classes = {}
-    module = None
+    propertyConfig = {}
     def __init__(self):
-        with open('item_properties.json', 'r') as file:
-            self.classes = json.load(file)
+        with open('D:\\work\\scheduler\\scheduler\\reader\\item_properties.json', 'r') as file:
+            self.propertyConfig = json.load(file)
+        # print(self.propertyConfig)
+        self.module = db_oim_orm
+        self.filepath = "D:\\work\\home\\componentsFile.txt"
 
-        self.module = __import__('db_oim_orm')
 
 
 
@@ -44,17 +46,20 @@ class Reader:
     def fetch(self):
 
         self.data.clear()
-        with open("D:\\work\\home\\componentsFile6.txt", "r") as components:
+        with open(self.filepath, "r", encoding='UTF-8') as components:
             content = components.read()
+            print(content)
             lines = content.split("\n")
+            print(lines[0])
+
             lines.pop()
+            print(len(lines))
 
             for line in lines:
                 name_data = line.split("{")
                 name = name_data[0]
                 data = name_data[1].replace("}", "")
-
-                obj = getattr(self.module, self.classes[name]["object"])()
+                obj = getattr(self.module, self.propertyConfig[name]["object"])()
 
                 properties = data.split(",")
                 last_saved_key = None
@@ -63,23 +68,28 @@ class Reader:
 
                     key = key_value[0].replace(" ", "")
 
-                    if key in self.classes[name]["properties"]:
+                    if key in self.propertyConfig[name]["properties"]:
                         # print("if\t"+key)
                         value = key_value[1]
+                        value = value.replace("'","")
                         last_saved_key = key
-                        if value == "null" or value == "'null'":
+                        if value == "null":
                             value = None
-                        setattr(obj, self.classes[name]["properties"][key], value)
+                        setattr(obj, self.propertyConfig[name]["properties"][key], value)
                     elif last_saved_key is not None:
                         setattr(
                             obj,
-                            self.classes[name]["properties"][last_saved_key],
-                            getattr(obj, self.classes[name]["properties"][last_saved_key])
+                            self.propertyConfig[name]["properties"][last_saved_key],
+                            getattr(obj, self.propertyConfig[name]["properties"][last_saved_key])
                             + ", "
                             + key
                         )
                 self.data.append(obj)
+        return self.data
 
+    def clear(self):
+        with open(self.filepath, 'w'):
+            pass
 
     def print(self):
         print(len(self.data))
@@ -87,9 +97,9 @@ class Reader:
             print(getattr(_, "ID"))
             print(getattr(_, "DocID"))
             print(getattr(_, "ComponentName"))
-            print(getattr(_, "Type_ID"))
-            print(getattr(_, "Kind_ID"))
-            print(getattr(_, "ManufacturerName_ID"))
+            print(getattr(_, "Type"))
+            print(getattr(_, "Kind"))
+            print(getattr(_, "ManufacturerName"))
             print(getattr(_, "Interfaces"))
             print(getattr(_, "MinVoltage"))
             print(getattr(_, "MaxVoltage"))

@@ -199,7 +199,7 @@ class Transistors(Base):
 class Microchips(Base):
     __tablename__ = 'Microchips'
 
-    ID = Column(Integer(), primary_key=True)
+    ID = Column(Integer(), primary_key=True, autoincrement=True)
     DocID = Column(BIGINT(), nullable=True)
     ComponentName = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=False, unique=False)
 

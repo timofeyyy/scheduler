@@ -1,9 +1,6 @@
 import sys
-import os
-import signal
 import subprocess
 import threading
-import psutil
 import random
 import dictionary
 
