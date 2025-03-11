@@ -1,0 +1,29 @@
+{
+  "Microchip": {
+    "object": "Microchips",
+    "properties": {
+      "id": "ID",
+      "docId": "DocID",
+      "componentName": "ComponentName",
+      "componentType": "Type_ID",
+      "componentKind": "Kind_ID",
+      "manufacturer": "ManufacturerName_ID",
+      "interfaceName": "Interfaces",
+      "voltageMin": "MinVoltage",
+      "voltageMax": "MaxVoltage",
+      "frequency": "Frequency",
+      "bitDepth": "BitDepthValue",
+      "consumptionCurrent": "ConsumptionCurrent",
+      "technology": "TechnologyName_ID",
+      "temperatureMin": "MinOperatingTemperature",
+      "temperatureMax": "MaxOperatingTemperature",
+      "radiationResistance": "RadiationResistance",
+      "radiationResistanceMeasures": "RadiationResistanceI",
+      "memoryFormat": "MemoryFormat",
+      "samplingTime": "SamplingTime",
+      "packageType": "Package",
+      "qualification": "Qualication",
+      "remark1": "Remark1"
+    }
+  }
+}

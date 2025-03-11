@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Black">
+<<<<<<< HEAD
     <option name="sdkName" value="Python 3.12 (db_proc)" />
+=======
+    <option name="sdkName" value="Python 3.11 (scheduler)" />
+>>>>>>> 7a2660f (dictionary and ui update)
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11 (scheduler)" project-jdk-type="Python SDK" />
 </project>

@@ -1,3 +1,8 @@
 import launcher
+import data_reader
+import json
 
-launcher.start()
+# launcher.start()
+reader = data_reader.Reader()
+reader.fetch()
+reader.print()
