@@ -14,7 +14,7 @@
       "frequency": "Frequency",
       "bitDepth": "BitDepthValue",
       "consumptionCurrent": "ConsumptionCurrent",
-      "technology": "TechnologyName_ID",
+      "technology": "TechnologyName",
       "temperatureMin": "MinOperatingTemperature",
       "temperatureMax": "MaxOperatingTemperature",
       "radiationResistance": "RadiationResistance",

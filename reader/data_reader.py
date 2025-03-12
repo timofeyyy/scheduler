@@ -9,7 +9,7 @@ class Reader:
             self.propertyConfig = json.load(file)
         # print(self.propertyConfig)
         self.module = db_oim_orm
-        self.filepath = "D:\\work\\home\\componentsFile.txt"
+        self.filepath = "D:\\work\\home\\componentsFile6.txt"
 
 
 

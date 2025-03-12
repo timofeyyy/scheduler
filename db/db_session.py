@@ -3,7 +3,7 @@ import string
 from sqlalchemy.orm import sessionmaker, Session
 # from .db_oim_orm import ComponentTypes
 from .db_connect import get_connection_mssql
-from .db_oim_orm import ComponentTypes, ComponentKinds, Manufacturers
+from .db_oim_orm import ComponentTypes, ComponentKinds, Manufacturers, Technologies
 from scheduler.reader import data_reader
 
 
@@ -19,7 +19,7 @@ class DBSession:
             if type == None:
                 type = ComponentTypes()
                 type.RuComponentType = name
-                type.EnComponentType = name
+                # type.EnComponentType = name
                 db.add(type)
                 db.commit()
             print(f'{type.ID} {type.RuComponentType}')
@@ -31,7 +31,7 @@ class DBSession:
             if kind == None:
                 kind = ComponentKinds()
                 kind.RuComponentKind = name
-                kind.EnComponentKind = name
+                # kind.EnComponentKind = name
                 db.add(kind)
                 db.commit()
             print(f'{kind.ID} {kind.RuComponentKind}')
@@ -48,6 +48,18 @@ class DBSession:
             print(f'{manufacturer.ID} {manufacturer.ManufacturerName}')
             return manufacturer.ID
 
+    def getTechnologyIdByName(self, name):
+        with Session(autoflush=False, bind=self.engine) as db:
+            technology = db.query(Technologies).filter(Technologies.RuTechnologyName == name).first()
+            if technology == None:
+                technology = Technologies()
+                technology.RuTechnologyName = name
+                db.add(technology)
+                db.commit()
+            print(f'{technology.ID} {technology.RuTechnologyName}')
+            return technology.ID
+
+
     def insertRowsFromFile(self):
 
         reader = data_reader.Reader()
@@ -62,16 +74,29 @@ class DBSession:
                 print(componentNameRec)
                 if(componentNameRec == None):
                     manufacturer = getattr(record, "ManufacturerName")
-                    manufacturerId = self.getManufacturerIdByName(manufacturer)
+                    manufacturerId = self.getManufacturerIdByName("ОАО ИНТЕГРАЛ")
                     setattr(record, "ManufacturerName_ID", manufacturerId)
 
                     ctype = getattr(record, "Type")
-                    ctypeId = self.getComponentTypeIdByName(ctype)
+                    ctypeId = self.getComponentTypeIdByName("микросхема")
                     setattr(record, "Type_ID", ctypeId)
 
                     kind = getattr(record, "Kind")
-                    kindId = self.getComponentKindIdByName(kind)
+                    kindId = self.getComponentKindIdByName("флеш-память")
                     setattr(record, "Kind_ID", kindId)
+
+                    technology = getattr(record, "TechnologyName")
+                    technologyId = self.getTechnologyIdByName("cтатическая память с произвольным доступом")
+                    setattr(record, "TechnologyName_ID", technologyId)
+
+                    if getattr(record, "MinVoltage") == None:
+                        setattr(record, "MinVoltage", 0)
+                    if getattr(record, "MaxVoltage") == None:
+                        setattr(record, "MaxVoltage", 0)
+                    if getattr(record, "MinOperatingTemperature") == None:
+                        setattr(record, "MinOperatingTemperature", 0)
+                    if getattr(record, "MaxOperatingTemperature") == None:
+                        setattr(record, "MaxOperatingTemperature", 0)
 
                     print(f'{kindId} {ctypeId} {manufacturerId}')
 
