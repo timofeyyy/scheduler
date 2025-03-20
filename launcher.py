@@ -2,11 +2,12 @@ import sys
 import subprocess
 import threading
 import random
-import dictionary
+from reader import dictionary
 
 from time import sleep
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from launcher_ui import Ui
+from scheduler.db.db_session import DBSession
 
 
 class MainWindow(QMainWindow, Ui):
@@ -31,14 +32,20 @@ class MainWindow(QMainWindow, Ui):
         self.set_items(0)
         self.set_url()
 
+        self.db = DBSession()
+
+        self.is_driver_working = False
+        self.is_parser_working = False
+        self.is_launcher_working = False
+
+        self.configPath = "D:\\work\\scheduler\\scheduler\\config.properties"
+
     def set_url(self):
         label_message = "укажите страницу и деталь"
         if self.params_defined():
             label_message = f'"https://www.chipdip.by/catalog-show/{self.selectedItem}?page={self.page}"'
         self.urlLabel.setText(label_message)
     def run_driver(self):
-        if not hasattr(self, 'is_driver_working'):
-            self.is_driver_working = False
 
         if not self.is_driver_working:
             thread = threading.Thread(target=self.run_driver_command)
@@ -51,21 +58,18 @@ class MainWindow(QMainWindow, Ui):
         self.is_driver_working = not self.is_driver_working
         self.driverButton.setText('Отключить' if self.is_driver_working else 'Запустить')
         self.driverStatusLabel.setText('Работает' if self.is_driver_working else 'Отключен')
-
-    def print_stdout(self, lines):
-        for line in lines:
-            print(line.strip())
     def run_driver_command(self):
 
         self.driver_process = subprocess.Popen(
-            'java "-Dwebdriver.chrome.driver=d:\\work\\selenium2\\chromedriver.exe" -jar "D:\\work\\selenium2\\selenium-server-standalone-3.5.3.jar"',
+            "ping google.com",
+            # 'java "-Dwebdriver.chrome.driver=d:\\work\\selenium2\\chromedriver.exe" -jar "D:\\work\\selenium2\\selenium-server-standalone-3.5.3.jar"',
             creationflags=subprocess.CREATE_NEW_CONSOLE
         )
 
         label_message = 'Отключен'
         self.driver_process.wait()
-        if self.driver_process.returncode == 1:
-            label_message = 'Комманда была прервана'
+        # if self.driver_process.returncode == 1:
+        #     label_message = 'Комманда была прервана'
         self.is_driver_working = False
         print(self.driver_process.returncode)
 
@@ -78,30 +82,30 @@ class MainWindow(QMainWindow, Ui):
             msgBox.exec()
             return
 
-        if not hasattr(self, 'is_parser_working'):
-            self.is_parser_working = False
-
         if not self.is_parser_working:
             self.edit_config()
             thread = threading.Thread(target=self.run_parser_command)
             thread.start()
         else:
             self.stop_parser()
+
         self.is_parser_working = not self.is_parser_working
 
         self.parserButton.setText('Отключить' if self.is_parser_working else 'Запустить')
-        self.parserStatusLabel.setText('Работает' if self.is_parser_working else 'Комманда была прервана')
+        # self.parserStatusLabel.setText('Работает' if self.is_parser_working else 'Комманда была прервана')
+        self.parserStatusLabel.setText('Работает' if self.is_parser_working else 'Отключен')
         self.driverButton.setEnabled(not self.is_parser_working)
+        self.autoParserButton.setEnabled(not self.is_parser_working)
 
-        if not hasattr(self, 'is_launcher_working') or (hasattr(self, 'is_launcher_working') and not self.is_launcher_working):
-            self.autoParserButton.setEnabled(not self.is_parser_working)
-        else:
-            self.parserButton.setEnabled(not self.is_parser_working)
+        # if not hasattr(self, 'is_launcher_working') or (hasattr(self, 'is_launcher_working') and not self.is_launcher_working):
+        #     self.autoParserButton.setEnabled(not self.is_parser_working)
+        # else:
+        #     self.parserButton.setEnabled(not self.is_parser_working)
     def params_defined(self):
-        return hasattr(self, 'page') and hasattr(self, 'selectedItem')
+        return hasattr(self, 'page') and self.page != ''
     def edit_config(self):
         print(self.page)
-        with open("D:\\work\\microparser\\src\\main\\resources\\config.properties", "r") as config:
+        with open(self.configPath, "r") as config:
             content = config.read()
             params = content.split("\n")
             for i in range(len(params)):
@@ -112,34 +116,43 @@ class MainWindow(QMainWindow, Ui):
                 params[i] = " = ".join(key_value)
             content = "\n".join(params)
 
-        with open("D:\\work\\microparser\\src\\main\\resources\\config.properties", "w") as config:
-            config.write(content)\
+        with open(self.configPath, "w") as config:
+            config.write(content)
 
     def stop_parser(self):
         subprocess.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.parser_process.pid))
 
     def run_parser_command(self):
+        self.numberPageLineEdit.setEnabled(False)
+        self.siteComboBox.setEnabled(False)
+        self.typeComboBox.setEnabled(False)
+        self.itemComboBox.setEnabled(False)
         self.parser_process = subprocess.Popen(
-            "ping google.com -n 10",
+            "ping google.com",
             # "mvn test -Dsuite=testng",
-            cwd="D:\\work\\microparser",
+            # cwd="D:\\work\\microparser",
             shell=True
         )
         self.parser_process.wait()
-
+        print(self.parser_process.returncode)
         label_message = "Отключен"
 
-        if self.parser_process.returncode == 1:
-            label_message = "Комманда была прервана"
+        # if self.parser_process.returncode == 1:
+        #     label_message = "Комманда была прервана"
 
         self.is_parser_working = False
         print(f"парсер статус {self.parser_process.returncode}")
 
         self.parserStatusLabel.setText(label_message)
         self.parserButton.setText("Запустить")
-        self.autoParserButton.setEnabled(True)
-        self.parserButton.setEnabled(True)
-        self.driverButton.setEnabled(True)
+        if not self.is_launcher_working:
+            self.autoParserButton.setEnabled(True)
+            self.parserButton.setEnabled(True)
+            self.driverButton.setEnabled(True)
+            self.numberPageLineEdit.setEnabled(True)
+            self.siteComboBox.setEnabled(True)
+            self.typeComboBox.setEnabled(True)
+            self.itemComboBox.setEnabled(True)
 
     def run_launcher(self):
         if not self.params_defined():
@@ -148,25 +161,36 @@ class MainWindow(QMainWindow, Ui):
             msgBox.exec()
             return
 
-        if not hasattr(self, 'is_launcher_working'):
-            self.is_launcher_working = False
-
-
         if not self.is_launcher_working:
             thread = threading.Thread(target=self.run_listener)
             thread.start()
         else:
             self.stop_parser()
-            self.parserButton.setEnabled(True)
-            self.driverButton.setEnabled(True)
+            # self.parserButton.setEnabled(True)
+            # self.driverButton.setEnabled(True)
             self.is_listener_working = False
 
 
         self.is_launcher_working = not self.is_launcher_working
-        self.autoParserStatusLabel.setText('Работает' if self.is_launcher_working else 'Комманда была прервана')
+        self.parserButton.setEnabled(not self.is_launcher_working)
+        self.driverButton.setEnabled(not self.is_launcher_working)
+        # self.autoParserStatusLabel.setText('Работает' if self.is_launcher_working else 'Комманда была прервана')
+        self.autoParserStatusLabel.setText('Работает' if self.is_launcher_working else 'Отключен')
+        self.autoParserButton.setText('Отключить' if self.is_launcher_working else 'Запустить')
+        self.numberPageLineEdit.setEnabled(not self.is_launcher_working)
+        self.siteComboBox.setEnabled(not self.is_launcher_working)
+        self.typeComboBox.setEnabled(not self.is_launcher_working)
+        self.itemComboBox.setEnabled(not self.is_launcher_working)
+
 
 
     def run_listener(self):
+        if not self.params_defined():
+            msgBox = QMessageBox()
+            msgBox.setText("Выберите страницу и тип элемента")
+            msgBox.exec()
+            return
+
         self.delay_time_past = True
         self.hours_delay = 0
         self.is_listener_working = True
@@ -179,12 +203,13 @@ class MainWindow(QMainWindow, Ui):
                         if not self.is_listener_working:
                             break
 
-                thread = threading.Thread(target=self.run_parser)
+                thread = threading.Thread(target=self.run_parser_command)
                 thread.start()
                 label_message = 'Работает'
                 self.delay_time_past = False
 
             sleep(1)
+
 
             if self.parser_process.returncode == 0:
                 self.hours_delay = random.randint(6, 10)
@@ -193,16 +218,20 @@ class MainWindow(QMainWindow, Ui):
                 self.numberPageLineEdit.setText(self.page)
                 self.edit_config()
                 self.delay_time_past = True
+                self.db.insertRowsFromFile()
+
 
             elif self.parser_process.returncode != None:
-                label_message = "Комманда была прервана"
-                self.is_listener_working = False
+                # label_message = "Комманда была прервана"
+                label_message = "Отключен"
 
-
+                # self.is_listener_working = False
+                
             print(f"слушатель {self.parser_process.returncode}")
             self.autoParserStatusLabel.setText(label_message)
+            # self.autoParserButton.setText(label_message)
 
-        self.autoParserButton.setText('Запустить')
+        # self.autoParserButton.setText('Запустить')
 
     def get_number(self):
         if not hasattr(self, 'page'):

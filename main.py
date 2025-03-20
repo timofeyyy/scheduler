@@ -1,12 +1,15 @@
 from sqlalchemy.orm import sessionmaker, Session
+
+import scheduler
 from db.db_connect import get_connection_mssql
 from reader.data_reader import Reader
 from db.db_oim_orm import Microchips, ComponentTypes, ComponentKinds, Manufacturers
 from db.db_connect import get_connection_mssql
 from reader import data_reader
+from scheduler import launcher
 from scheduler.db.db_session import DBSession
 
-# launcher.start()
+launcher.start()
 # reader = Reader()
 # records = reader.fetch()
 # reader.print()
@@ -15,8 +18,8 @@ from scheduler.db.db_session import DBSession
 
 
 # engine = get_connection_mssql()
-db = DBSession()
-db.insertRowsFromFile()
+# db = DBSession()
+# db.insertRowsFromFile()
 # componentTypeId = db.getComponentTypeIdByName("ДиОд")
 # print(componentTypeId)
 # componentKindId = db.getComponentKindIdByName("флеш-память")
