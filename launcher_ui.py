@@ -144,14 +144,14 @@ class Ui(object):
     def InitTextContent(self, MainWindow):
         MainWindow.setWindowTitle("scheduler")
 
-        self.siteLabel.setText("Site")
-        self.numberPageLabel.setText("Page num")
-        self.typeLabel.setText("Table")
-        self.itemLabel.setText("Item")
+        self.siteLabel.setText("Сайт")
+        self.numberPageLabel.setText("Номер страницы")
+        self.typeLabel.setText("Тип")
+        self.itemLabel.setText("Категория")
 
         self.driverLabel.setText("Chrome driver")
-        self.parserLabel.setText("Parser page")
-        self.autoParserLabel.setText("Parser auto")
+        self.parserLabel.setText("Обычный режим")
+        self.autoParserLabel.setText("Автоматический режим")
 
         self.driverButton.setText("Запустить")
         self.parserButton.setText("Запустить")

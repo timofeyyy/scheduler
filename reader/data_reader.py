@@ -1,15 +1,17 @@
 import json
-from scheduler.db import db_oim_orm
+
+from db import db_oim_orm
+
 
 class Reader:
     data = []
     propertyConfig = {}
-    def __init__(self):
-        with open('D:\\work\\scheduler\\scheduler\\reader\\item_properties.json', 'r') as file:
+    def __init__(self, propPath, dataPath):
+        with open(propPath, 'r') as file:
             self.propertyConfig = json.load(file)
         # print(self.propertyConfig)
         self.module = db_oim_orm
-        self.filepath = "D:\\work\\home\\componentsFile6.txt"
+        self.filepath = dataPath
 
 
 

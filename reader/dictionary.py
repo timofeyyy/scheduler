@@ -1,4 +1,6 @@
-from scheduler.db import db_oim_orm
+from db import db_oim_orm
+
+
 class Dictionary:
     items = []
     types = []

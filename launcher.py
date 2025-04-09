@@ -2,12 +2,14 @@ import sys
 import subprocess
 import threading
 import random
+
+from db.db_session import DBSession
 from reader import dictionary
 
 from time import sleep
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from launcher_ui import Ui
-from scheduler.db.db_session import DBSession
+
 
 
 class MainWindow(QMainWindow, Ui):
@@ -38,7 +40,7 @@ class MainWindow(QMainWindow, Ui):
         self.is_parser_working = False
         self.is_launcher_working = False
 
-        self.configPath = "D:\\work\\scheduler\\scheduler\\config.properties"
+        self.configPath = "D:\\work\\scheduler\\scheduler\\src\\config.properties"
 
     def set_url(self):
         label_message = "укажите страницу и деталь"
@@ -61,8 +63,8 @@ class MainWindow(QMainWindow, Ui):
     def run_driver_command(self):
 
         self.driver_process = subprocess.Popen(
-            "ping google.com",
-            # 'java "-Dwebdriver.chrome.driver=d:\\work\\selenium2\\chromedriver.exe" -jar "D:\\work\\selenium2\\selenium-server-standalone-3.5.3.jar"',
+            # "ping google.com",
+            'D:\\work\\scheduler\\scheduler\\selenium\\chromedriver.exe',
             creationflags=subprocess.CREATE_NEW_CONSOLE
         )
 

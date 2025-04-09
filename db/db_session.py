@@ -1,10 +1,9 @@
-import string
-
 from sqlalchemy.orm import sessionmaker, Session
-# from .db_oim_orm import ComponentTypes
+
+from reader import data_reader
 from .db_connect import get_connection_mssql
 from .db_oim_orm import ComponentTypes, ComponentKinds, Manufacturers, Technologies
-from scheduler.reader import data_reader
+
 
 
 
@@ -62,7 +61,10 @@ class DBSession:
 
     def insertRowsFromFile(self):
 
-        reader = data_reader.Reader()
+        reader = data_reader.Reader(
+            "D:\\work\\scheduler\\scheduler\\src\\item_properties.json",
+            "D:\\work\\scheduler\\scheduler\\src\\componentsFile6.txt"
+        )
         records = reader.fetch()
         reader.print()
         # print(len(records))
