@@ -1,8 +1,9 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtWidgets import QHBoxLayout, QWidget
 
 
-class Ui(object):
-    def setupUi(self, MainWindow):
+class LauncherUI(object):
+    def setup(self, MainWindow):
         MainWindow.resize(600, 600)
         MainWindow.setMinimumSize(QtCore.QSize(600, 600))
         MainWindow.setMaximumSize(QtCore.QSize(600, 600))
@@ -13,48 +14,74 @@ class Ui(object):
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
 
         self.leftWidget = QtWidgets.QWidget(parent=self.centralwidget)
-        self.leftWidget.setGeometry(QtCore.QRect(10, 10, 241, 300))
+        self.leftWidget.setGeometry(QtCore.QRect(10, 10, 241, 450))
 
         self.leftVerticalLayout = QtWidgets.QVBoxLayout(self.leftWidget)
 
-        self.NumPage()
-        self.Site()
-        self.Type()
-        self.Item()
-        self.Url()
+        self.init_page_widget()
+        self.init_site_widget()
+        self.init_type_widget()
+        self.init_category_widget()
+        self.init_url_widget()
+        self.init_interval_widget()
 
         self.rightWidget = QtWidgets.QWidget(parent=self.centralwidget)
-        self.rightWidget.setGeometry(QtCore.QRect(256, 10, 334, 300))
+        self.rightWidget.setGeometry(QtCore.QRect(256, 10, 334, 200))
 
         self.rightVerticalLayout = QtWidgets.QVBoxLayout(self.rightWidget)
 
-        self.Driver()
-        self.Parser()
-        self.AutoParser()
+        self.init_parser_widget()
+        self.init_auto_parser_widget()
 
         MainWindow.setCentralWidget(self.centralwidget)
 
-        self.InitTextContent(MainWindow)
-        self.InitStyleSheets2(MainWindow)
+        self.init_text_content(MainWindow)
+        self.init_stylesheets(MainWindow)
 
-    def InitStyleSheets2(self, MainWindow):
+    def init_stylesheets(self, MainWindow):
         MainWindow.setStyleSheet("padding_bottom: 10px;")
         self.siteLabel.setStyleSheet("font-size:26px;")
         self.numberPageLabel.setStyleSheet("font-size:26px;")
         self.typeLabel.setStyleSheet("font-size:26px;")
         self.itemLabel.setStyleSheet("font-size:26px;")
+        self.intervalLabel.setStyleSheet("font-size:26px;")
 
-        self.driverLabel.setStyleSheet("font-size:26px;")
         self.parserLabel.setStyleSheet("font-size:26px;")
         self.autoParserLabel.setStyleSheet("font-size:26px;")
 
         self.numberPageLineEdit.setStyleSheet("font-size: 15px;")
 
         self.autoParserButton.setStyleSheet("font-size: 15px;")
-        self.driverButton.setStyleSheet("font-size: 15px;")
         self.parserButton.setStyleSheet("font-size: 15px;")
 
-    def NumPage(self):
+        self.hoursFromLabel.setStyleSheet("font-size: 15px;")
+        self.hoursToLabel.setStyleSheet("font-size: 15px;")
+
+
+
+
+    def init_interval_widget(self):
+        self.leftVerticalLayout.addItem(self.spacer)
+
+        self.intervalLabel = QtWidgets.QLabel(parent=self.leftWidget)
+        self.leftVerticalLayout.addWidget(self.intervalLabel, 0)
+
+        self.hoursFromLabel = QtWidgets.QLabel(parent=self.leftWidget)
+        self.leftVerticalLayout.addWidget(self.hoursFromLabel, 0)
+
+        self.hoursFromLineEdit = QtWidgets.QLineEdit(parent=self.leftWidget)
+        self.hoursFromLineEdit.setMaximumSize(QtCore.QSize(120, 20))
+        self.leftVerticalLayout.addWidget(self.hoursFromLineEdit, 0)
+
+        self.hoursToLabel = QtWidgets.QLabel(parent=self.leftWidget)
+        self.leftVerticalLayout.addWidget(self.hoursToLabel, 0)
+
+        self.hoursToLineEdit = QtWidgets.QLineEdit(parent=self.leftWidget)
+        self.hoursToLineEdit.setMaximumSize(QtCore.QSize(120, 20))
+        self.leftVerticalLayout.addWidget(self.hoursToLineEdit, 0)
+
+
+    def init_page_widget(self):
         self.leftVerticalLayout.addItem(self.spacer)
 
         self.numberPageLabel = QtWidgets.QLabel(parent=self.leftWidget)
@@ -64,30 +91,24 @@ class Ui(object):
         self.numberPageLineEdit.setMaximumSize(QtCore.QSize(120, 20))
         self.leftVerticalLayout.addWidget(self.numberPageLineEdit, 0)
 
-    def Site(self):
+    def init_site_widget(self):
         self.siteLabel = QtWidgets.QLabel(parent=self.leftWidget)
 
         self.leftVerticalLayout.addWidget(self.siteLabel, 0)
-        # self.leftVerticalLayout.addItem(self.spacer)
 
         self.siteComboBox = QtWidgets.QComboBox(parent=self.leftWidget)
         self.siteComboBox.setMaximumSize(QtCore.QSize(120, 20))
         self.leftVerticalLayout.addWidget(self.siteComboBox, 0)
-        # self.leftVerticalLayout.addItem(self.spacer)
 
-    def Type(self):
+    def init_type_widget(self):
         self.typeLabel = QtWidgets.QLabel(parent=self.leftWidget)
         self.leftVerticalLayout.addWidget(self.typeLabel, 0)
-
-        # self.leftVerticalLayout.addItem(self.spacer)
 
         self.typeComboBox = QtWidgets.QComboBox(parent=self.leftWidget)
         self.typeComboBox.setMaximumSize(QtCore.QSize(120, 20))
         self.leftVerticalLayout.addWidget(self.typeComboBox, 0)
 
-        # self.leftVerticalLayout.addItem(self.spacer)
-
-    def Item(self):
+    def init_category_widget(self):
         self.itemLabel = QtWidgets.QLabel(parent=self.leftWidget)
         self.leftVerticalLayout.addWidget(self.itemLabel, 0)
 
@@ -99,19 +120,7 @@ class Ui(object):
 
         self.leftVerticalLayout.addItem(self.spacer)
 
-    def Driver(self):
-        self.driverLabel = QtWidgets.QLabel(parent=self.rightWidget)
-        self.rightVerticalLayout.addWidget(self.driverLabel)
-        self.driverStatusLabel = QtWidgets.QLabel(parent=self.rightWidget)
-        self.rightVerticalLayout.addWidget(self.driverStatusLabel)
-
-        self.driverButton = QtWidgets.QPushButton(parent=self.rightWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
-        self.driverButton.setSizePolicy(sizePolicy)
-        self.driverButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        self.rightVerticalLayout.addWidget(self.driverButton, 0, QtCore.Qt.AlignmentFlag.AlignBottom)
-
-    def Parser(self):
+    def init_parser_widget(self):
         self.parserLabel = QtWidgets.QLabel(parent=self.rightWidget)
         self.rightVerticalLayout.addWidget(self.parserLabel)
         self.parserStatusLabel = QtWidgets.QLabel(parent=self.rightWidget)
@@ -123,7 +132,7 @@ class Ui(object):
         self.parserButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.rightVerticalLayout.addWidget(self.parserButton, 0, QtCore.Qt.AlignmentFlag.AlignBottom)
 
-    def AutoParser(self):
+    def init_auto_parser_widget(self):
         self.autoParserLabel = QtWidgets.QLabel(parent=self.rightWidget)
         self.rightVerticalLayout.addWidget(self.autoParserLabel)
         self.autoParserStatusLabel = QtWidgets.QLabel(parent=self.rightWidget)
@@ -136,42 +145,27 @@ class Ui(object):
         self.autoParserButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.rightVerticalLayout.addWidget(self.autoParserButton, 0, QtCore.Qt.AlignmentFlag.AlignBottom)
 
-    def Url(self):
+    def init_url_widget(self):
         self.urlLabel = QtWidgets.QLabel(parent=self.leftWidget)
         self.urlLabel.setWordWrap(True)
         self.leftVerticalLayout.addWidget(self.urlLabel)
 
-    def InitTextContent(self, MainWindow):
+    def init_text_content(self, MainWindow):
         MainWindow.setWindowTitle("scheduler")
 
         self.siteLabel.setText("Сайт")
         self.numberPageLabel.setText("Номер страницы")
         self.typeLabel.setText("Тип")
         self.itemLabel.setText("Категория")
+        self.intervalLabel.setText("Интервал")
+        self.hoursFromLabel.setText("Кол-во часов от")
+        self.hoursToLabel.setText("Кол-во часов до")
 
-        self.driverLabel.setText("Chrome driver")
         self.parserLabel.setText("Обычный режим")
         self.autoParserLabel.setText("Автоматический режим")
 
-        self.driverButton.setText("Запустить")
         self.parserButton.setText("Запустить")
         self.autoParserButton.setText("Запустить")
 
         self.parserStatusLabel.setText("Отключен")
-        self.driverStatusLabel.setText("Отключен")
         self.autoParserStatusLabel.setText("Отключен")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

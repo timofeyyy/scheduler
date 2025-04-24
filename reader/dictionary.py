@@ -7,7 +7,6 @@ class Dictionary:
     sites = []
 
     def __init__(self):
-        #load info rom site
         self.items = [
             {db_oim_orm .Microchips.__tablename__ : [
                 "ic-ac-dc-converters",
