@@ -1,4 +1,5 @@
 import requests
+from pathlib import Path
 
 class PDFParser:
     def __init__(self, datasheetPath):
@@ -10,17 +11,19 @@ class PDFParser:
             links = content.read()
             self.list = links.split(",")
 
-    def download(self):
-        print(len(self.list))
-        for line in self.list:
-            try:
-                # temporary names
-                bytes = requests.get(line)
-                # print(bytes.text)
-                dotParts = line.split('.')
-                slashParts = dotParts[len(dotParts)-2].split('/')
-                name = slashParts[len(slashParts)-1]
-                with open(f'D:\\work\\scheduler\\scheduler\\src\\datasheets\\{name}.pdf', 'wb') as f:
+    def download(self, link):
+        name = None
+        try:
+            dotParts = link.split('.')
+            slashParts = dotParts[len(dotParts) - 2].split('/')
+            name = slashParts[len(slashParts) - 1]
+            filePath = f'{self.datasheetPath}\\{name}.pdf'
+            file = Path(filePath)
+            if not file.exists():
+                bytes = requests.get(link)
+                with open(filePath, 'wb') as f:
                     f.write(bytes.content)
-            except:
-                pass
+                print(f"downloaded {name}")
+        except:
+            pass
+        return name

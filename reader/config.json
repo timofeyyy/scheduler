@@ -1,0 +1,60 @@
+{
+  "Microchips": {
+    "objName": "Microchip",
+    "properties": {
+      "id": "ID",
+      "docId": "DocID",
+      "componentName": "ComponentName",
+      "componentType": "Type",
+      "componentKind": "Kind",
+      "manufacturer": "ManufacturerName",
+      "interfaceName": "Interfaces",
+      "voltageMin": "MinVoltage",
+      "voltageMax": "MaxVoltage",
+      "frequency": "Frequency",
+      "bitDepth": "BitDepthValue",
+      "consumptionCurrent": "ConsumptionCurrent",
+      "technology": "TechnologyName",
+      "temperatureMin": "MinOperatingTemperature",
+      "temperatureMax": "MaxOperatingTemperature",
+      "radiationResistance": "RadiationResistance",
+      "radiationResistanceMeasures": "RadiationResistanceI",
+      "memoryFormat": "MemoryFormat",
+      "samplingTime": "SamplingTime",
+      "packageType": "Package",
+      "qualification": "Qualication",
+      "remark1": "Remark1",
+      "pdfLink": "Remark1"
+    },
+    "fileName": "componentsFile.txt",
+    "fetchDelegateName": "sendMicrochips"
+  },
+  "Resistors": {
+    "objName": "Resistor",
+    "properties": {
+      "id": "ID",
+      "docId": "DocID",
+      "componentName": "ComponentName",
+      "componentType": "Type",
+      "componentKind": "Kind",
+      "manufacturer": "ManufacturerName",
+      "power_Rating": "PowerRating",
+      "voltageMin": "MinVoltage",
+      "voltageMax": "MaxVoltage",
+      "rateResistanceMin": "MinRatedResistance",
+      "rateResistanceMax": "MaxRatedResistance",
+      "rateResistanceTolerance": "ResistanceTolerance",
+      "temperatureMin": "MinOperatingTemperature",
+      "temperatureMax": "MaxOperatingTemperature",
+      "currentLimit": "CurrentLimit",
+      "packageType": "Package",
+      "qualicationSG": "QualicationSG",
+      "qualicationEC": "QualicationЕС",
+      "remark1": "Remark1",
+      "remark2": "Remark2",
+      "pdfLink": "Remark1"
+    },
+    "fileName": "componentsFileResistor.txt",
+    "fetchDelegateName": "sendResistors"
+  }
+}

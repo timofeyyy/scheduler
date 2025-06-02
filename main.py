@@ -1,18 +1,27 @@
+from sqlalchemy.orm import sessionmaker, Session
 
-from launcher import  launcher
 
-from reader.pdf_parser import PDFParser
+
+import launcher
+from db.db_connect import get_connection_mssql
+from db.db_session import DBSession
+from reader.data_reader import Reader
+from db.db_oim_orm import Microchips, ComponentTypes, ComponentKinds, Manufacturers
+from db.db_connect import get_connection_mssql
+from reader import data_reader
 
 launcher.start()
 # reader = Reader()
 # records = reader.fetch()
 # reader.print()
+# db = DBSession()
+# db.insertRowsFromFile()
 
-# pdfParser = PDFParser(
-#     "D:\\work\\scheduler\\scheduler\\src\\datasheets.txt"
-# )
+
+# import configparser
 #
-# pdfParser.read()
-# pdfParser.download()
-
-
+# config = configparser.ConfigParser()
+# config.read("settings.ini")
+#
+# print(config["dir"]["microparser"])
+# 'johndoe'

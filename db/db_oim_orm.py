@@ -118,7 +118,7 @@ class Diods(Base):
 class Resistors(Base):
     __tablename__ = 'Resistors'
 
-    ID = Column(Integer(), primary_key=True)
+    ID = Column(Integer(), primary_key=True, autoincrement=True)
     DocID = Column(BIGINT(), nullable=True)
     ComponentName = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=False, unique=False)
 
@@ -202,7 +202,8 @@ class Microchips(Base):
     ID = Column(Integer(), primary_key=True, autoincrement=True)
     DocID = Column(BIGINT(), nullable=True)
     ComponentName = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=False, unique=False)
-
+    PdfLink = ""
+        # Column(NVARCHAR(100), nullable=True, unique=False)
     Type_ID = Column(Integer(), ForeignKey('ComponentTypes.ID'), nullable=False)
     Kind_ID = Column(Integer(), ForeignKey('ComponentKinds.ID'), nullable=False)
     ManufacturerName_ID = Column(Integer(), ForeignKey('Manufacturers.ID'), nullable=False)

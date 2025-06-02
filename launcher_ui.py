@@ -1,9 +1,8 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
-from PyQt6.QtWidgets import QHBoxLayout, QWidget
 
 
-class LauncherUI(object):
-    def setup(self, MainWindow):
+class Ui(object):
+    def setupUi(self, MainWindow):
         MainWindow.resize(600, 600)
         MainWindow.setMinimumSize(QtCore.QSize(600, 600))
         MainWindow.setMaximumSize(QtCore.QSize(600, 600))
@@ -14,74 +13,49 @@ class LauncherUI(object):
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
 
         self.leftWidget = QtWidgets.QWidget(parent=self.centralwidget)
-        self.leftWidget.setGeometry(QtCore.QRect(10, 10, 241, 450))
+        self.leftWidget.setGeometry(QtCore.QRect(10, 10, 241, 330))
 
         self.leftVerticalLayout = QtWidgets.QVBoxLayout(self.leftWidget)
 
-        self.init_page_widget()
-        self.init_site_widget()
-        self.init_type_widget()
-        self.init_category_widget()
-        self.init_url_widget()
-        self.init_interval_widget()
+        self.numPage()
+        self.site()
+        self.countOfItemOnPage()
+        self.type()
+        self.item()
+        self.url()
 
         self.rightWidget = QtWidgets.QWidget(parent=self.centralwidget)
         self.rightWidget.setGeometry(QtCore.QRect(256, 10, 334, 200))
 
         self.rightVerticalLayout = QtWidgets.QVBoxLayout(self.rightWidget)
-
-        self.init_parser_widget()
-        self.init_auto_parser_widget()
+        # self.Driver()
+        self.parser()
+        self.autoParser()
 
         MainWindow.setCentralWidget(self.centralwidget)
 
-        self.init_text_content(MainWindow)
-        self.init_stylesheets(MainWindow)
+        self.InitTextContent(MainWindow)
+        self.InitStyleSheets2(MainWindow)
 
-    def init_stylesheets(self, MainWindow):
+    def InitStyleSheets2(self, MainWindow):
         MainWindow.setStyleSheet("padding_bottom: 10px;")
-        self.siteLabel.setStyleSheet("font-size:26px;")
-        self.numberPageLabel.setStyleSheet("font-size:26px;")
-        self.typeLabel.setStyleSheet("font-size:26px;")
-        self.itemLabel.setStyleSheet("font-size:26px;")
-        self.intervalLabel.setStyleSheet("font-size:26px;")
+        self.siteLabel.setStyleSheet("font-size:20px;")
+        self.countOfItemOnPageLabel.setStyleSheet("font-size:20px;")
+        self.numberPageLabel.setStyleSheet("font-size:20px;")
+        self.typeLabel.setStyleSheet("font-size:20px;")
+        self.itemLabel.setStyleSheet("font-size:20px;")
 
-        self.parserLabel.setStyleSheet("font-size:26px;")
-        self.autoParserLabel.setStyleSheet("font-size:26px;")
+        # self.driverLabel.setStyleSheet("font-size:20px;")
+        self.parserLabel.setStyleSheet("font-size:20px;")
+        self.autoParserLabel.setStyleSheet("font-size:20px;")
 
         self.numberPageLineEdit.setStyleSheet("font-size: 15px;")
 
         self.autoParserButton.setStyleSheet("font-size: 15px;")
+        # self.driverButton.setStyleSheet("font-size: 15px;")
         self.parserButton.setStyleSheet("font-size: 15px;")
 
-        self.hoursFromLabel.setStyleSheet("font-size: 15px;")
-        self.hoursToLabel.setStyleSheet("font-size: 15px;")
-
-
-
-
-    def init_interval_widget(self):
-        self.leftVerticalLayout.addItem(self.spacer)
-
-        self.intervalLabel = QtWidgets.QLabel(parent=self.leftWidget)
-        self.leftVerticalLayout.addWidget(self.intervalLabel, 0)
-
-        self.hoursFromLabel = QtWidgets.QLabel(parent=self.leftWidget)
-        self.leftVerticalLayout.addWidget(self.hoursFromLabel, 0)
-
-        self.hoursFromLineEdit = QtWidgets.QLineEdit(parent=self.leftWidget)
-        self.hoursFromLineEdit.setMaximumSize(QtCore.QSize(120, 20))
-        self.leftVerticalLayout.addWidget(self.hoursFromLineEdit, 0)
-
-        self.hoursToLabel = QtWidgets.QLabel(parent=self.leftWidget)
-        self.leftVerticalLayout.addWidget(self.hoursToLabel, 0)
-
-        self.hoursToLineEdit = QtWidgets.QLineEdit(parent=self.leftWidget)
-        self.hoursToLineEdit.setMaximumSize(QtCore.QSize(120, 20))
-        self.leftVerticalLayout.addWidget(self.hoursToLineEdit, 0)
-
-
-    def init_page_widget(self):
+    def numPage(self):
         self.leftVerticalLayout.addItem(self.spacer)
 
         self.numberPageLabel = QtWidgets.QLabel(parent=self.leftWidget)
@@ -91,24 +65,39 @@ class LauncherUI(object):
         self.numberPageLineEdit.setMaximumSize(QtCore.QSize(120, 20))
         self.leftVerticalLayout.addWidget(self.numberPageLineEdit, 0)
 
-    def init_site_widget(self):
+    def site(self):
         self.siteLabel = QtWidgets.QLabel(parent=self.leftWidget)
 
         self.leftVerticalLayout.addWidget(self.siteLabel, 0)
+        # self.leftVerticalLayout.addItem(self.spacer)
 
         self.siteComboBox = QtWidgets.QComboBox(parent=self.leftWidget)
         self.siteComboBox.setMaximumSize(QtCore.QSize(120, 20))
         self.leftVerticalLayout.addWidget(self.siteComboBox, 0)
+        # self.leftVerticalLayout.addItem(self.spacer)
+    def countOfItemOnPage(self):
+        self.countOfItemOnPageLabel = QtWidgets.QLabel(parent=self.leftWidget)
 
-    def init_type_widget(self):
+        self.leftVerticalLayout.addWidget(self.countOfItemOnPageLabel, 0)
+
+        self.countOfItemOnPageComboBox = QtWidgets.QComboBox(parent=self.leftWidget)
+        self.countOfItemOnPageComboBox.setMaximumSize(QtCore.QSize(120, 20))
+
+        self.leftVerticalLayout.addWidget(self.countOfItemOnPageComboBox, 0)
+
+    def type(self):
         self.typeLabel = QtWidgets.QLabel(parent=self.leftWidget)
         self.leftVerticalLayout.addWidget(self.typeLabel, 0)
+
+        # self.leftVerticalLayout.addItem(self.spacer)
 
         self.typeComboBox = QtWidgets.QComboBox(parent=self.leftWidget)
         self.typeComboBox.setMaximumSize(QtCore.QSize(120, 20))
         self.leftVerticalLayout.addWidget(self.typeComboBox, 0)
 
-    def init_category_widget(self):
+        # self.leftVerticalLayout.addItem(self.spacer)
+
+    def item(self):
         self.itemLabel = QtWidgets.QLabel(parent=self.leftWidget)
         self.leftVerticalLayout.addWidget(self.itemLabel, 0)
 
@@ -120,7 +109,19 @@ class LauncherUI(object):
 
         self.leftVerticalLayout.addItem(self.spacer)
 
-    def init_parser_widget(self):
+    def driver(self):
+        self.driverLabel = QtWidgets.QLabel(parent=self.rightWidget)
+        self.rightVerticalLayout.addWidget(self.driverLabel)
+        self.driverStatusLabel = QtWidgets.QLabel(parent=self.rightWidget)
+        self.rightVerticalLayout.addWidget(self.driverStatusLabel)
+
+        self.driverButton = QtWidgets.QPushButton(parent=self.rightWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        self.driverButton.setSizePolicy(sizePolicy)
+        self.driverButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.rightVerticalLayout.addWidget(self.driverButton, 0, QtCore.Qt.AlignmentFlag.AlignBottom)
+
+    def parser(self):
         self.parserLabel = QtWidgets.QLabel(parent=self.rightWidget)
         self.rightVerticalLayout.addWidget(self.parserLabel)
         self.parserStatusLabel = QtWidgets.QLabel(parent=self.rightWidget)
@@ -132,7 +133,7 @@ class LauncherUI(object):
         self.parserButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.rightVerticalLayout.addWidget(self.parserButton, 0, QtCore.Qt.AlignmentFlag.AlignBottom)
 
-    def init_auto_parser_widget(self):
+    def autoParser(self):
         self.autoParserLabel = QtWidgets.QLabel(parent=self.rightWidget)
         self.rightVerticalLayout.addWidget(self.autoParserLabel)
         self.autoParserStatusLabel = QtWidgets.QLabel(parent=self.rightWidget)
@@ -145,27 +146,43 @@ class LauncherUI(object):
         self.autoParserButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.rightVerticalLayout.addWidget(self.autoParserButton, 0, QtCore.Qt.AlignmentFlag.AlignBottom)
 
-    def init_url_widget(self):
+    def url(self):
         self.urlLabel = QtWidgets.QLabel(parent=self.leftWidget)
         self.urlLabel.setWordWrap(True)
         self.leftVerticalLayout.addWidget(self.urlLabel)
 
-    def init_text_content(self, MainWindow):
-        MainWindow.setWindowTitle("scheduler")
+    def InitTextContent(self, MainWindow):
+        MainWindow.setWindowTitle("Панировщик запуска")
 
         self.siteLabel.setText("Сайт")
+        self.countOfItemOnPageLabel.setText("Товаров на странице")
         self.numberPageLabel.setText("Номер страницы")
         self.typeLabel.setText("Тип")
         self.itemLabel.setText("Категория")
-        self.intervalLabel.setText("Интервал")
-        self.hoursFromLabel.setText("Кол-во часов от")
-        self.hoursToLabel.setText("Кол-во часов до")
 
-        self.parserLabel.setText("Обычный режим")
-        self.autoParserLabel.setText("Автоматический режим")
+        # self.driverLabel.setText("Chrome driver")
+        self.parserLabel.setText("Запуск единожды")
+        self.autoParserLabel.setText("Запуск в авт режиме")
 
+        # self.driverButton.setText("Запустить")
         self.parserButton.setText("Запустить")
         self.autoParserButton.setText("Запустить")
 
         self.parserStatusLabel.setText("Отключен")
+        # self.driverStatusLabel.setText("Отключен")
         self.autoParserStatusLabel.setText("Отключен")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

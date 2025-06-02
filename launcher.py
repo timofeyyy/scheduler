@@ -2,55 +2,92 @@ import sys
 import subprocess
 import threading
 import random
-
-from db.db_session import DBSession
-from launcher.launcher_ui import LauncherUI
 from reader import dictionary
-
+import configparser
 from time import sleep
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
+from launcher_ui import Ui
+from db.db_session import DBSession
 
 
-
-
-class MainWindow(QMainWindow, LauncherUI):
+class MainWindow(QMainWindow, Ui):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.setup(self)
+        self.setupUi(self)
+        # self.driverButton.clicked.connect(self.run_driver)
         self.parserButton.clicked.connect(self.run_parser)
-        self.autoParserButton.clicked.connect(self.run_launcher)
-        self.numberPageLineEdit.textChanged.connect(self.get_page)
-        self.hoursFromLineEdit.textChanged.connect(self.get_hours_from)
-        self.hoursToLineEdit.textChanged.connect(self.get_hours_to)
-
+        # self.parserButton.clicked.connect(self.edit_config)
+        self.autoParserButton.clicked.connect(self.run_parser_auto_mode)
+        self.numberPageLineEdit.textChanged.connect(self.get_number)
         self.dict = dictionary.Dictionary()
 
         self.siteComboBox.addItems(self.dict.sites)
         self.typeComboBox.addItems(self.dict.types)
+        self.countOfItemOnPageComboBox.addItems(self.dict.nameOfGroupCategories)
+
 
         self.siteComboBox.currentIndexChanged.connect(self.get_site)
-        self.typeComboBox.currentIndexChanged.connect(self.set_items)
+        self.typeComboBox.currentIndexChanged.connect(self.get_types)
         self.itemComboBox.currentIndexChanged.connect(self.get_item)
+        self.countOfItemOnPageComboBox.currentIndexChanged.connect(self.get_countOfItemOnPage)
 
-        self.set_items(0)
+        self.get_types(0)
+        self.get_countOfItemOnPage(0)
         self.set_url()
 
-        self.db = DBSession()
 
+
+        # self.db = DBSession()
+
+        # self.is_driver_working = False
         self.is_parser_working = False
         self.is_launcher_working = False
+        config = configparser.ConfigParser()
+        config.read("settings.ini")
+        self.configFile = config["microparser"]["configFile"]
+        self.launchDir = config["microparser"]["launchDir"]
+        print(self.configFile)
+        self.config = self.dict.get_config(self.configFile)
 
-        self.configPath = "D:\\work\\scheduler\\scheduler\\src\\config.properties"
+
 
     def set_url(self):
         label_message = "укажите страницу и деталь"
-        if self.page_required():
+        if self.params_defined():
             label_message = f'"https://www.chipdip.by/catalog-show/{self.selectedItem}?page={self.page}"'
         self.urlLabel.setText(label_message)
-
+    # def run_driver(self):
+    #
+    #     if not self.is_driver_working:
+    #         thread = threading.Thread(target=self.run_driver_command)
+    #         thread.start()
+    #     else:
+    #         print(self.driver_process.pid)
+    #         self.driver_process.terminate()
+    #
+    #
+    #     self.is_driver_working = not self.is_driver_working
+    #     self.driverButton.setText('Отключить' if self.is_driver_working else 'Запустить')
+    #     self.driverStatusLabel.setText('Работает' if self.is_driver_working else 'Отключен')
+    # def run_driver_command(self):
+    #
+    #     self.driver_process = subprocess.Popen(
+    #         # "ping google.com",
+    #         'java "-Dwebdriver.chrome.driver=d:\\work\\selenium136\\chromedriver.exe" -jar "D:\\work\\selenium136\\selenium-server-standalone-3.5.3.jar"',
+    #         creationflags=subprocess.CREATE_NEW_CONSOLE
+    #     )
+    #
+    #     label_message = 'Отключен'
+    #     self.driver_process.wait()
+    #
+    #     self.is_driver_working = False
+    #     print(self.driver_process.returncode)
+    #
+    #     self.driverStatusLabel.setText(label_message)
+    #     # self.driverButton.setText('Запустить')
     def run_parser(self):
-        if not self.page_required():
+        if not self.params_defined():
             msgBox = QMessageBox()
             msgBox.setText("Выберите страницу и тип элемента")
             msgBox.exec()
@@ -67,38 +104,29 @@ class MainWindow(QMainWindow, LauncherUI):
 
         self.parserButton.setText('Отключить' if self.is_parser_working else 'Запустить')
         self.parserStatusLabel.setText('Работает' if self.is_parser_working else 'Отключен')
+        # self.driverButton.setEnabled(not self.is_parser_working)
         self.autoParserButton.setEnabled(not self.is_parser_working)
-
-
-
-    def page_required(self):
+    def params_defined(self):
         return hasattr(self, 'page') and self.page != ''
-    def hours_from_required(self):
-        return hasattr(self, 'hours_from') and self.hours_from != ''
-    def hours_to_required(self):
-        return hasattr(self, 'hours_to') and self.hours_to != ''
-    def is_interval_invalid(self):
-        return int(self.hours_to) <= int(self.hours_from)
-
-
-
     def edit_config(self):
+        print(self.selectedNameOfGroupCategory)
         print(self.page)
-        with open(self.configPath, "r") as config:
-            content = config.read()
-            params = content.split("\n")
-            for i in range(len(params)):
-                key_value = params[i].split(" = ")
-                key = key_value[0].replace(" ", "")
-                if key == "baseUrlPageNum":
-                    key_value[1] = f'"https://www.chipdip.by/catalog-show/{self.selectedItem}?page={self.page}"'
-                params[i] = " = ".join(key_value)
-            content = "\n".join(params)
+        print(self.selectedCountOfItemOnPage)
+        self.config['countOfItemOnPage'] = self.selectedCountOfItemOnPage
+        self.config['numberOfPage'] = self.page
+        self.config['nameOfGroupCategory'] = self.selectedNameOfGroupCategory
+        lines = ""
+        for key, value in self.config.items():
+            print(key)
+            print(value)
+            lines += f"{key} = {value}\n"
 
-        with open(self.configPath, "w") as config:
-            config.write(content)
+        with open(self.configFile, "w") as config:
+            config.write(lines)
+
     def stop_parser(self):
         subprocess.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.parser_process.pid))
+
     def run_parser_command(self):
         self.numberPageLineEdit.setEnabled(False)
         self.siteComboBox.setEnabled(False)
@@ -106,44 +134,37 @@ class MainWindow(QMainWindow, LauncherUI):
         self.itemComboBox.setEnabled(False)
         self.parser_process = subprocess.Popen(
             "ping google.com",
+            # "mvn test -Dsuite=testng",
+            cwd=self.launchDir,
             shell=True
         )
         self.parser_process.wait()
         print(self.parser_process.returncode)
-        label_message = "Отключен"
 
         self.is_parser_working = False
         print(f"парсер статус {self.parser_process.returncode}")
 
-        self.parserStatusLabel.setText(label_message)
+        self.parserStatusLabel.setText("Отключен")
         self.parserButton.setText("Запустить")
         if not self.is_launcher_working:
             self.autoParserButton.setEnabled(True)
             self.parserButton.setEnabled(True)
+            # self.driverButton.setEnabled(True)
             self.numberPageLineEdit.setEnabled(True)
             self.siteComboBox.setEnabled(True)
             self.typeComboBox.setEnabled(True)
             self.itemComboBox.setEnabled(True)
-    def run_launcher(self):
-        msgBox = QMessageBox()
+        # self.db.insertRowsFromFile()
 
-        if not self.page_required():
+    def run_parser_auto_mode(self):
+        if not self.params_defined():
+            msgBox = QMessageBox()
             msgBox.setText("Выберите страницу и тип элемента")
             msgBox.exec()
             return
 
-        if not self.hours_from_required() or not self.hours_to_required():
-            msgBox.setText("Укажите интервал (оба поля должны быть заполнены)")
-            msgBox.exec()
-            return
-
-        if self.is_interval_invalid():
-            msgBox.setText("Некоректный интервал")
-            msgBox.exec()
-            return
-
         if not self.is_launcher_working:
-            thread = threading.Thread(target=self.run_listener)
+            thread = threading.Thread(target=self.run_auto_mode)
             thread.start()
         else:
             self.stop_parser()
@@ -152,16 +173,22 @@ class MainWindow(QMainWindow, LauncherUI):
 
         self.is_launcher_working = not self.is_launcher_working
         self.parserButton.setEnabled(not self.is_launcher_working)
+        # self.driverButton.setEnabled(not self.is_launcher_working)
         self.autoParserStatusLabel.setText('Работает' if self.is_launcher_working else 'Отключен')
         self.autoParserButton.setText('Отключить' if self.is_launcher_working else 'Запустить')
         self.numberPageLineEdit.setEnabled(not self.is_launcher_working)
         self.siteComboBox.setEnabled(not self.is_launcher_working)
         self.typeComboBox.setEnabled(not self.is_launcher_working)
         self.itemComboBox.setEnabled(not self.is_launcher_working)
-        self.hoursToLineEdit.setEnabled(not self.is_launcher_working)
-        self.hoursFromLineEdit.setEnabled(not self.is_launcher_working)
-    def run_listener(self):
 
+
+
+    def run_auto_mode(self):
+        if not self.params_defined():
+            msgBox = QMessageBox()
+            msgBox.setText("Выберите страницу и тип элемента")
+            msgBox.exec()
+            return
 
         self.delay_time_past = True
         self.hours_delay = 0
@@ -183,14 +210,14 @@ class MainWindow(QMainWindow, LauncherUI):
             sleep(1)
 
 
-            if self.parser_process.returncode == 0:
-                self.hours_delay = random.randint(int(self.hours_from), int(self.hours_to))
+            if self.parser_process.returncode == 1:
+                self.hours_delay = random.randint(6, 10)
                 label_message = f"Выполнено, выжидает интервал перед следущим запуском {self.hours_delay} часов"
                 self.page = f'{int(self.page)+1}'
                 self.numberPageLineEdit.setText(self.page)
                 self.edit_config()
                 self.delay_time_past = True
-                self.db.insertRowsFromFile()
+                # self.db.insertRowsFromFile()
 
 
             elif self.parser_process.returncode != None:
@@ -199,7 +226,8 @@ class MainWindow(QMainWindow, LauncherUI):
             print(f"слушатель {self.parser_process.returncode}")
             self.autoParserStatusLabel.setText(label_message)
 
-    def get_page(self):
+
+    def get_number(self):
         if not hasattr(self, 'page'):
             self.page = ''
 
@@ -212,42 +240,22 @@ class MainWindow(QMainWindow, LauncherUI):
             self.numberPageLineEdit.setText(self.page)
         self.set_url()
 
-    def get_hours_from(self):
-        if not hasattr(self, 'hours_from'):
-            self.hours_from = ''
-
-        if self.hoursFromLineEdit.text().isdigit():
-            self.hours_from = self.hoursFromLineEdit.text()
-
-        elif self.hoursFromLineEdit.text() != self.hours_from:
-            if self.hoursFromLineEdit.text() == '':
-                self.hours_from = ''
-            self.hoursFromLineEdit.setText(self.hours_from)
-
-    def get_hours_to(self):
-        if not hasattr(self, 'hours_to'):
-            self.hours_to = ''
-
-        if self.hoursToLineEdit.text().isdigit():
-            self.hours_to = self.hoursToLineEdit.text()
-
-        elif self.hoursToLineEdit.text() != self.hours_to:
-            if self.hoursToLineEdit.text() == '':
-                self.hours_to = ''
-            self.hoursToLineEdit.setText(self.hours_to)
-
-
     def get_site(self, index):
         self.selectedSite = self.siteComboBox.itemText(index)
 
     def get_item(self, index):
         self.selectedItem = self.itemComboBox.itemText(index)
+        # self.selectedItem = index
         self.set_url()
 
-    def set_items(self, index):
+    def get_types(self, index):
         self.itemComboBox.clear()
         self.itemComboBox.addItems(self.dict.items[index].get(self.dict.types[index]))
+        self.selectedNameOfGroupCategory = index + 1
         self.get_item(0)
+
+    def get_countOfItemOnPage(self, index):
+        self.selectedCountOfItemOnPage = self.countOfItemOnPageComboBox.itemText(index)
 
 def start():
     app = QApplication(sys.argv)
