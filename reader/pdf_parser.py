@@ -24,6 +24,8 @@ class PDFParser:
                 with open(filePath, 'wb') as f:
                     f.write(bytes.content)
                 print(f"downloaded {name}")
+            else:
+                print(f"file ${name} already exists")
         except:
             pass
         return name

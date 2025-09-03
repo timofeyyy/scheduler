@@ -6,11 +6,11 @@ from reader import dictionary
 import configparser
 from time import sleep
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
-from launcher_ui import Ui
-from db.db_session import DBSession
+from launcher_ui import LauncherUi
+from db import UnitOfWork
 
 
-class MainWindow(QMainWindow, Ui):
+class MainWindow(QMainWindow, LauncherUi):
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -26,37 +26,42 @@ class MainWindow(QMainWindow, Ui):
         self.typeComboBox.addItems(self.dict.types)
         self.countOfItemOnPageComboBox.addItems(self.dict.nameOfGroupCategories)
 
-
         self.siteComboBox.currentIndexChanged.connect(self.get_site)
         self.typeComboBox.currentIndexChanged.connect(self.get_types)
         self.itemComboBox.currentIndexChanged.connect(self.get_item)
-        self.countOfItemOnPageComboBox.currentIndexChanged.connect(self.get_countOfItemOnPage)
+        self.countOfItemOnPageComboBox.currentIndexChanged.connect(self.get_page_item_count)
 
-        self.get_types(0)
-        self.get_countOfItemOnPage(0)
-        self.set_url()
-
-
-
-        # self.db = DBSession()
-
-        # self.is_driver_working = False
+        self.db = UnitOfWork()
         self.is_parser_working = False
         self.is_launcher_working = False
+        # self.is_driver_working = False
+        self.is_listener_working = False
+        self.table_name = None
+        self.delay_time_past = None
+        self.hours_delay = 0
+        self.page = None
+        self.parser_process = None
+        self.driver_process = None
+        self.selectedSite = None
+        self.selectedNameOfGroupCategory = None
+        self.selectedItem = None
+        self.selectedCountOfItemOnPage = None
+        self.get_types(0)
+        self.get_page_item_count(0)
+        self.set_url()
         config = configparser.ConfigParser()
         config.read("settings.ini")
         self.configFile = config["microparser"]["configFile"]
         self.launchDir = config["microparser"]["launchDir"]
-        print(self.configFile)
         self.config = self.dict.get_config(self.configFile)
-
-
+        self.run_driver_command()
 
     def set_url(self):
         label_message = "укажите страницу и деталь"
-        if self.params_defined():
+        if self.page is None:
             label_message = f'"https://www.chipdip.by/catalog-show/{self.selectedItem}?page={self.page}"'
         self.urlLabel.setText(label_message)
+        
     # def run_driver(self):
     #
     #     if not self.is_driver_working:
@@ -70,24 +75,17 @@ class MainWindow(QMainWindow, Ui):
     #     self.is_driver_working = not self.is_driver_working
     #     self.driverButton.setText('Отключить' if self.is_driver_working else 'Запустить')
     #     self.driverStatusLabel.setText('Работает' if self.is_driver_working else 'Отключен')
-    # def run_driver_command(self):
-    #
-    #     self.driver_process = subprocess.Popen(
-    #         # "ping google.com",
-    #         'java "-Dwebdriver.chrome.driver=d:\\work\\selenium136\\chromedriver.exe" -jar "D:\\work\\selenium136\\selenium-server-standalone-3.5.3.jar"',
-    #         creationflags=subprocess.CREATE_NEW_CONSOLE
-    #     )
-    #
-    #     label_message = 'Отключен'
-    #     self.driver_process.wait()
-    #
-    #     self.is_driver_working = False
-    #     print(self.driver_process.returncode)
-    #
-    #     self.driverStatusLabel.setText(label_message)
-    #     # self.driverButton.setText('Запустить')
+
+    def run_driver_command(self):
+        self.driver_process = subprocess.Popen(
+            "ping google.com",
+            # 'java "-Dwebdriver.chrome.driver=d:\\work\\selenium136\\chromedriver.exe" -jar "D:\\work\\selenium136\\selenium-server-standalone-3.5.3.jar"',
+            creationflags=subprocess.CREATE_NEW_CONSOLE
+        )
+        self.driver_process.wait()
+
     def run_parser(self):
-        if not self.params_defined():
+        if self.page is None:
             msgBox = QMessageBox()
             msgBox.setText("Выберите страницу и тип элемента")
             msgBox.exec()
@@ -106,8 +104,8 @@ class MainWindow(QMainWindow, Ui):
         self.parserStatusLabel.setText('Работает' if self.is_parser_working else 'Отключен')
         # self.driverButton.setEnabled(not self.is_parser_working)
         self.autoParserButton.setEnabled(not self.is_parser_working)
-    def params_defined(self):
-        return hasattr(self, 'page') and self.page != ''
+
+    
     def edit_config(self):
         print(self.selectedNameOfGroupCategory)
         print(self.page)
@@ -132,12 +130,14 @@ class MainWindow(QMainWindow, Ui):
         self.siteComboBox.setEnabled(False)
         self.typeComboBox.setEnabled(False)
         self.itemComboBox.setEnabled(False)
+        self.countOfItemOnPageComboBox.setEnabled(False)
         self.parser_process = subprocess.Popen(
             "ping google.com",
             # "mvn test -Dsuite=testng",
             cwd=self.launchDir,
             shell=True
         )
+
         self.parser_process.wait()
         print(self.parser_process.returncode)
 
@@ -149,15 +149,16 @@ class MainWindow(QMainWindow, Ui):
         if not self.is_launcher_working:
             self.autoParserButton.setEnabled(True)
             self.parserButton.setEnabled(True)
+            self.countOfItemOnPageComboBox.setEnabled(True)
             # self.driverButton.setEnabled(True)
             self.numberPageLineEdit.setEnabled(True)
             self.siteComboBox.setEnabled(True)
             self.typeComboBox.setEnabled(True)
             self.itemComboBox.setEnabled(True)
-        # self.db.insertRowsFromFile()
+        self.db.insert_many(table_name=self.table_name)
 
     def run_parser_auto_mode(self):
-        if not self.params_defined():
+        if self.page is None:
             msgBox = QMessageBox()
             msgBox.setText("Выберите страницу и тип элемента")
             msgBox.exec()
@@ -170,7 +171,6 @@ class MainWindow(QMainWindow, Ui):
             self.stop_parser()
             self.is_listener_working = False
 
-
         self.is_launcher_working = not self.is_launcher_working
         self.parserButton.setEnabled(not self.is_launcher_working)
         # self.driverButton.setEnabled(not self.is_launcher_working)
@@ -180,11 +180,10 @@ class MainWindow(QMainWindow, Ui):
         self.siteComboBox.setEnabled(not self.is_launcher_working)
         self.typeComboBox.setEnabled(not self.is_launcher_working)
         self.itemComboBox.setEnabled(not self.is_launcher_working)
-
-
+        self.countOfItemOnPageComboBox.setEnabled(not self.is_launcher_working)
 
     def run_auto_mode(self):
-        if not self.params_defined():
+        if self.page is None:
             msgBox = QMessageBox()
             msgBox.setText("Выберите страницу и тип элемента")
             msgBox.exec()
@@ -194,7 +193,7 @@ class MainWindow(QMainWindow, Ui):
         self.hours_delay = 0
         self.is_listener_working = True
         self.autoParserButton.setText('Отключить')
-
+        label_message = ""
         while self.is_listener_working:
             if self.delay_time_past:
                 if self.hours_delay != 0:
@@ -209,7 +208,6 @@ class MainWindow(QMainWindow, Ui):
 
             sleep(1)
 
-
             if self.parser_process.returncode == 1:
                 self.hours_delay = random.randint(6, 10)
                 label_message = f"Выполнено, выжидает интервал перед следущим запуском {self.hours_delay} часов"
@@ -217,15 +215,12 @@ class MainWindow(QMainWindow, Ui):
                 self.numberPageLineEdit.setText(self.page)
                 self.edit_config()
                 self.delay_time_past = True
-                # self.db.insertRowsFromFile()
-
-
-            elif self.parser_process.returncode != None:
+                self.db.insert_many(table_name=self.table_name)
+            elif self.parser_process.returncode is not None:
                 label_message = "Отключен"
 
             print(f"слушатель {self.parser_process.returncode}")
             self.autoParserStatusLabel.setText(label_message)
-
 
     def get_number(self):
         if not hasattr(self, 'page'):
@@ -249,13 +244,16 @@ class MainWindow(QMainWindow, Ui):
         self.set_url()
 
     def get_types(self, index):
+        self.table_name = self.dict.types[index]
         self.itemComboBox.clear()
-        self.itemComboBox.addItems(self.dict.items[index].get(self.dict.types[index]))
+        print(self.dict.types[index])
+        self.itemComboBox.addItems(self.dict.items[index].get(self.table_name))
         self.selectedNameOfGroupCategory = index + 1
         self.get_item(0)
 
-    def get_countOfItemOnPage(self, index):
+    def get_page_item_count(self, index):
         self.selectedCountOfItemOnPage = self.countOfItemOnPageComboBox.itemText(index)
+        
 
 def start():
     app = QApplication(sys.argv)

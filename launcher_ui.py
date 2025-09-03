@@ -1,7 +1,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui(object):
+class LauncherUi(object):
     def setupUi(self, MainWindow):
         MainWindow.resize(600, 600)
         MainWindow.setMinimumSize(QtCore.QSize(600, 600))

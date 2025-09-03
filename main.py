@@ -1,27 +1,26 @@
 from sqlalchemy.orm import sessionmaker, Session
-
-
-
+from db import *
+from repo import *
+from sqlalchemy.inspection import inspect
 import launcher
-from db.db_connect import get_connection_mssql
-from db.db_session import DBSession
-from reader.data_reader import Reader
-from db.db_oim_orm import Microchips, ComponentTypes, ComponentKinds, Manufacturers
-from db.db_connect import get_connection_mssql
-from reader import data_reader
-
 launcher.start()
 # reader = Reader()
 # records = reader.fetch()
 # reader.print()
+
+# db = UnitOfWork()
+# db.insert_many(Resistors.__tablename__)
+# db.insert_many(Microchips.__tablename__)
+
+# mapper = inspect(Resistors)
+# mapper_len = len(mapper.attrs)
+# print(mapper_len)
+
 # db = DBSession()
-# db.insertRowsFromFile()
+# db.insertRowsFromFile("Microchips")
+# engine = get_connection_mssql()
+# repo = ResistorRepo(engine=engine)
 
 
-# import configparser
-#
-# config = configparser.ConfigParser()
-# config.read("settings.ini")
-#
-# print(config["dir"]["microparser"])
-# 'johndoe'
+
+
