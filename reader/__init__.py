@@ -1,3 +1,3 @@
 from .pdf_parser import *
-from .dictionary import *
-from .data_reader import *
+from .params import *
+from .txt_reader import *

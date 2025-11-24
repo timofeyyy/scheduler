@@ -1,11 +1,11 @@
-from scheduler.db import db_oim_orm
+from scheduler.db.repo import db_oim_orm
 
 
-class Dictionary:
+class LaunchParameters:
 
     def __init__(self):
         self.items = [
-            {db_oim_orm.Microchips.__tablename__: [
+            {db_oim_orm.Microchips.__tablename__ : [
                 "ic-memory"
                 # "ic-ac-dc-converters",
                 # "ic-dc-dc-converters",
@@ -27,15 +27,15 @@ class Dictionary:
                 # "monolithic-ceramic-capacitors",
                 # "metallized-paper-capacitors"
             ]},
-            {db_oim_orm .Diods.__tablename__: [
+            {db_oim_orm.Diods.__tablename__: [
                 # "diodes-zener",
                 # "diodes-schottky",
-                # "diodes-power-rus",
+                "diodes-power-rus",
                 # "diodes-uhf-rus",
-                # "diodes-other",
+                # "diodes-data_ref",
             ]},
-            {db_oim_orm .Transistors.__tablename__: [
-                # "bipolar-transistors",
+            {db_oim_orm.Transistors.__tablename__: [
+                "bipolar-transistors",
                 # "field-effect-transistor",
                 # "igbt",
                 # "jfet-transistors",
@@ -43,20 +43,18 @@ class Dictionary:
             ]}
         ]
         self.types = [
-            db_oim_orm .Microchips.__tablename__,
-            db_oim_orm .Resistors.__tablename__,
-            # db_oim_orm .Diods.__tablename__,
-            # db_oim_orm .Capacitors.__tablename__,
-            # db_oim_orm .Transistors.__tablename__
+            db_oim_orm.Microchips.__tablename__,
+            db_oim_orm.Resistors.__tablename__,
+            db_oim_orm.Capacitors.__tablename__,
+            db_oim_orm.Diods.__tablename__,
+            db_oim_orm.Transistors.__tablename__
         ]
         self.sites = [
             "www.chipdip.by",
             # "www.belchip.by"
         ]
         self.nameOfGroupCategories = [
-            "20",
             "40",
-            "60"
         ]
 
     def get_config(self, path):

@@ -69,14 +69,15 @@ class Technologies(Base):
 
 class Diods(Base):
     __tablename__ = 'Diods'
+    __typename__ = "Diod"
 
-    ID = Column(Integer(), primary_key=True)
-    DocID = Column(BIGINT(), nullable=True)
+    ID = Column(Integer(), primary_key=True, info={"skip": True})
+    DocID = Column(BIGINT(), nullable=True, info={"skip": True})
     ComponentName = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=False, unique=False, info={"compare": True})
-    Date = Column(DATE(), nullable=True, default=datetime.datetime.now(), info={"skip": True})
+    Insertion = Column(DATE(), nullable=True, default=datetime.datetime.now(), info={"skip": True})
 
-    Type_ID = Column(Integer(), ForeignKey('ComponentTypes.ID'), nullable=True)
-    Kind_ID = Column(Integer(), ForeignKey('ComponentKinds.ID'), nullable=True)
+    Type_ID = Column(Integer(), ForeignKey('ComponentTypes.ID'), nullable=True, info={"skip": True})
+    Kind_ID = Column(Integer(), ForeignKey('ComponentKinds.ID'), nullable=True, info={"skip": True})
     ManufacturerName_ID = Column(Integer(), ForeignKey('Manufacturers.ID'), nullable=True)
 
     MaxPermissibleDCVoltage = Column(FLOAT(), nullable=True)
@@ -91,18 +92,20 @@ class Diods(Base):
     Package = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
     Remark1 = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
     Remark2 = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
+    SpecificationDoc = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
 
 
 class Resistors(Base):
     __tablename__ = 'Resistors'
+    __typename__ = "Resistor"
 
     ID = Column(Integer(), primary_key=True, autoincrement=True, info={"skip": True})
     DocID = Column(BIGINT(), nullable=True, info={"skip": True})
     ComponentName = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=False, unique=False, info={"compare": True})
-    Date = Column(DATE(), nullable=True, default=datetime.datetime.now(), info={"skip": True})
+    Insertion = Column(DATE(), nullable=True, default=datetime.datetime.now(), info={"skip": True})
     Type_ID = Column(Integer(), ForeignKey('ComponentTypes.ID'), nullable=True, info={"skip": True})
     Kind_ID = Column(Integer(), ForeignKey('ComponentKinds.ID'), nullable=True, info={"skip": True})
-    ManufacturerName_ID = Column(Integer(), ForeignKey('Manufacturers.ID'), nullable=True, info={"skip": True})
+    ManufacturerName_ID = Column(Integer(), ForeignKey('Manufacturers.ID'), nullable=True)
     PowerRating = Column(FLOAT(), nullable=True)
     MinVoltage = Column(FLOAT(), nullable=True)
     MaxVoltage = Column(FLOAT(), nullable=True)
@@ -117,18 +120,20 @@ class Resistors(Base):
     QualicationЕС = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
     Remark1 = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False, info={"skip": True})
     Remark2 = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False, info={"skip": True})
+    SpecificationDoc = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
 
 
 class Transistors(Base):
     __tablename__ = 'Transistors'
+    __typename__ = "Transistor"
 
-    ID = Column(Integer(), primary_key=True)
-    DocID = Column(BIGINT(), nullable=True)
+    ID = Column(Integer(), primary_key=True, info={"skip": True})
+    DocID = Column(BIGINT(), nullable=True, info={"skip": True})
     ComponentName = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=False, unique=False, info={"compare": True})
-    Date = Column(DATE(), nullable=True, default=datetime.datetime.now(), info={"skip": True})
+    Insertion = Column(DATE(), nullable=True, default=datetime.datetime.now(), info={"skip": True})
 
-    Type_ID = Column(Integer(), ForeignKey('ComponentTypes.ID'), nullable=True)
-    Kind_ID = Column(Integer(), ForeignKey('ComponentKinds.ID'), nullable=True)
+    Type_ID = Column(Integer(), ForeignKey('ComponentTypes.ID'), nullable=True, info={"skip": True})
+    Kind_ID = Column(Integer(), ForeignKey('ComponentKinds.ID'), nullable=True, info={"skip": True})
     ManufacturerName_ID = Column(Integer(), ForeignKey('Manufacturers.ID'), nullable=True)
 
     MaxPermissibleDCVoltage = Column(FLOAT(), nullable=True)
@@ -142,19 +147,21 @@ class Transistors(Base):
     Package = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
     Remark1 = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
     Remark2 = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
+    SpecificationDoc = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
 
 
 class Microchips(Base):
     __tablename__ = 'Microchips'
+    __typename__ = "Microchip"
+
 
     ID = Column(Integer(), primary_key=True, autoincrement=True, info={"skip": True})
     DocID = Column(BIGINT(), nullable=True, info={"skip": True})
     ComponentName = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=False, unique=False, info={"compare": True})
-    PdfLink = ""
-    Date = Column(DATE(), nullable=True, default=datetime.datetime.now(), info={"skip": True})
+    Insertion = Column(DATE(), nullable=True, default=datetime.datetime.now(), info={"skip": True})
     Type_ID = Column(Integer(), ForeignKey('ComponentTypes.ID'), nullable=False, info={"skip": True})
     Kind_ID = Column(Integer(), ForeignKey('ComponentKinds.ID'), nullable=False, info={"skip": True})
-    ManufacturerName_ID = Column(Integer(), ForeignKey('Manufacturers.ID'), nullable=False, info={"skip": True})
+    ManufacturerName_ID = Column(Integer(), ForeignKey('Manufacturers.ID'), nullable=False)
 
     Interfaces = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
     MinVoltage = Column(FLOAT(), nullable=False, default=0)
@@ -171,19 +178,21 @@ class Microchips(Base):
     SamplingTime = Column(FLOAT(), nullable=True)
     Package = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
     Qualication = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
-    Remark1 = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False, info={"skip": True})
+    Remark1 = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
+    SpecificationDoc = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
 
 
 class Capacitors(Base):
     __tablename__ = 'Capacitors'
+    __typename__ = "Capacitor"
 
-    ID = Column(Integer(), primary_key=True)
-    DocID = Column(BIGINT(), nullable=True)
+    ID = Column(Integer(), primary_key=True, info={"skip": True})
+    DocID = Column(BIGINT(), nullable=True,info={"skip": True})
     ComponentName = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=False, unique=False, info={"compare": True})
-    Date = Column(DATE(), nullable=True, default=datetime.datetime.now(), info={"skip": True})
+    Insertion = Column(DATE(), nullable=True, default=datetime.datetime.now(), info={"skip": True})
 
-    Type_ID = Column(Integer(), ForeignKey('ComponentTypes.ID'), nullable=True)
-    Kind_ID = Column(Integer(), ForeignKey('ComponentKinds.ID'), nullable=True)
+    Type_ID = Column(Integer(), ForeignKey('ComponentTypes.ID'), nullable=True, info={"skip": True})
+    Kind_ID = Column(Integer(), ForeignKey('ComponentKinds.ID'), nullable=True, info={"skip": True})
     ManufacturerName_ID = Column(Integer(), ForeignKey('Manufacturers.ID'), nullable=True)
 
     OutputType = Column(NVARCHAR(collation='Cyrillic_General_CI_AS'), nullable=True)
@@ -199,6 +208,7 @@ class Capacitors(Base):
     QualicationЕС = Column(NVARCHAR(collation='Cyrillic_General_CI_AS'), nullable=True)
     Remark1 = Column(NVARCHAR(collation='Cyrillic_General_CI_AS'), nullable=True)
     Remark2 = Column(NVARCHAR(collation='Cyrillic_General_CI_AS'), nullable=True)
+    SpecificationDoc = Column(NVARCHAR(450, collation='Cyrillic_General_CI_AS'), nullable=True, unique=False)
 
 
 def create_tables(engine):

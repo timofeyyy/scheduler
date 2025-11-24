@@ -2,12 +2,13 @@ import sys
 import subprocess
 import threading
 import random
-from reader import dictionary
-import configparser
+from scheduler.reader import dictionary
 from time import sleep
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
-from launcher_ui import LauncherUi
-from db import UnitOfWork
+from scheduler.launcher_ui import LauncherUi
+from scheduler.db import UnitOfWork
+from scheduler.settings import get_settings
+
 
 
 class MainWindow(QMainWindow, LauncherUi):
@@ -49,8 +50,7 @@ class MainWindow(QMainWindow, LauncherUi):
         self.get_types(0)
         self.get_page_item_count(0)
         self.set_url()
-        config = configparser.ConfigParser()
-        config.read("settings.ini")
+        config = get_settings()
         self.configFile = config["microparser"]["configFile"]
         self.launchDir = config["microparser"]["launchDir"]
         self.config = self.dict.get_config(self.configFile)

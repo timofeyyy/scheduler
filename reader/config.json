@@ -26,8 +26,7 @@
       "remark1": "Remark1",
       "pdfLink": "Remark1"
     },
-    "fileName": "componentsFile.txt",
-    "fetchDelegateName": "sendMicrochips"
+    "fileName": "componentsFile.txt"
   },
   "Resistors": {
     "objName": "Resistor",
@@ -54,7 +53,6 @@
       "remark2": "Remark2",
       "pdfLink": "Remark1"
     },
-    "fileName": "componentsFileResistor.txt",
-    "fetchDelegateName": "sendResistors"
+    "fileName": "componentsFileResistor.txt"
   }
 }

@@ -38,7 +38,6 @@ class LauncherUi(object):
         self.InitStyleSheets2(MainWindow)
 
     def InitStyleSheets2(self, MainWindow):
-        MainWindow.setStyleSheet("padding_bottom: 10px;")
         self.siteLabel.setStyleSheet("font-size:20px;")
         self.countOfItemOnPageLabel.setStyleSheet("font-size:20px;")
         self.numberPageLabel.setStyleSheet("font-size:20px;")
